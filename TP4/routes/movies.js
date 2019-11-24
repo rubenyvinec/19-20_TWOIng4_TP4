@@ -1,11 +1,12 @@
 const express = require('express');
 // Lodash utils library
-const _ = require('lodash');
-	
+const _ = require('lodash');	
 const router = express.Router();
+const axios = require('axios').default;
+
 
 // Create RAW data array
-let movies = [{
+let movies = [/*{
   id: "0",
   movie: "Alien",
   yearOfRelease: 1987,
@@ -25,7 +26,8 @@ let movies = [{
   boxOffice: 1000, // en USD$,
   rottenTomatoesScore: 7,
  }
-];
+*/];
+
 
 /* GET movies listing. */
 router.get('/', (req, res) => {
@@ -39,18 +41,37 @@ router.get('/:id', (req, res) => {
   // Find movie in DB
   const movie = _.find(movies, ['id', id]);
   // Return movie
+
+  /*const movieFilter = movie.filter(movie => id);*/
   res.status(200).json({
-    message: 'Movie found!',
-    movie 
-  });
+    message: `Showing movie with id : ${id}`,
+	movie
+	  });
 });
 
 /* PUT new movie. */
+
 router.put('/', (req, res) => {
   // Get the data from request from request
   const { movie } = req.body;
   // Create new unique id
   const id = _.uniqueId();
+
+  axios({
+  	method : 'get',
+  	url: `http://www.omdbapi.com/?t=${movie}&apikey=acea86bc`,
+  	responseType: 'json'
+  })
+  .then(function(response){
+  	console.log(response.data);
+  	film = response.data;
+  	movies.push({film,id});
+  	res.status(200).json({
+  		message: `On à ajouté le film ${id}`,
+  		movie: {film}
+  	});
+  });
+ /*
   // Insert it in array (normaly with connect the data with the database)
   movies.push({ movie, id });
   // Return message
@@ -58,6 +79,7 @@ router.put('/', (req, res) => {
     message: `Just added ${id}`,
     movie: { movie, id }
   });
+ */
 });
 
 /* DELETE movie. */
@@ -82,12 +104,13 @@ router.post('/:id', (req, res) => {
   const { movie } = req.body;
   // Find in DB
   const movieToUpdate = _.find(movies, ["id", id]);
+
   // Update data with new data (js is by address)
   movieToUpdate.movie = movie;
 
   // Return message
   res.json({
-    message: `Just updated ${id} with ${movie}`
+    message: `Just updated ${id} with ${movie}`,
   });
 });
 
