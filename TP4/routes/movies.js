@@ -25,8 +25,8 @@ let movies = [/*{
   poster: "blabla", // lien vers une image d'affiche,
   boxOffice: 1000, // en USD$,
   rottenTomatoesScore: 7,
- }*/
-];
+ }
+*/];
 
 
 /* GET movies listing. */
@@ -65,22 +65,10 @@ router.put('/', (req, res) => {
   .then(function(response){
   	console.log(response.data);
   	film = response.data;
-  	let buffer ={
-  		id :id,
-  		titre: film.Title,
-  		release : film.Released,
-  		runtime : film.Runtime,
-  		acteurs : film.Actors,
-  		poster: film.Poster,
-  		boxoffice : film.Boxoffice,
-  		rate : film.Ratings[2].Value
-
-  	};
-
-  	movies.push({buffer,id});
+  	movies.push({film,id});
   	res.status(200).json({
   		message: `On à ajouté le film ${id}`,
-  		movies
+  		movie: {film}
   	});
   });
  /*
